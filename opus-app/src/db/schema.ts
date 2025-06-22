@@ -16,15 +16,15 @@ export const usersTable = pgTable("users", {
 
 
 export const authSessionsTable = pgTable("sessions", {
-                    id: text('id').primaryKey(),
-                    expiresAt: timestamp('expires_at').notNull(),
- token: text('token').notNull().unique(),
- createdAt: timestamp('created_at').notNull(),
- updatedAt: timestamp('updated_at').notNull(),
- ipAddress: text('ip_address'),
- userAgent: text('user_agent'),
- userId: text('user_id').notNull().references(()=> usersTable.id, { onDelete: 'cascade' })
-                });
+    id: text('id').primaryKey(),
+    expiresAt: timestamp('expires_at').notNull(),        
+    token: text('token').notNull().unique(),
+    createdAt : timestamp('created_at').notNull(),
+    updatedAt: timestamp('updated_at').notNull(),
+    ipAddress: text('ip_address'),
+    userAgent: text('user_agent'),
+    userId: text('user_id').notNull().references(()=> usersTable.id, { onDelete: 'cascade' })
+});
 
 export const accountsTable= pgTable("accounts", {
                     id: text('id').primaryKey(),
@@ -124,7 +124,7 @@ export const faqTable = pgTable("faqs", {
     userID: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
 });
 
-export const sessionsTable = pgTable("sessions", {
+export const sessionsTable = pgTable("agent_sessions", {
     id: uuid('id').primaryKey().defaultRandom(),
     userId: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
     instanceId: uuid('instance_id').notNull().references(() => instancesTable.id, { onDelete: 'cascade' }),
