@@ -65,7 +65,7 @@ const SignupForm = () => {
 
 
     return (
-        <Card>
+        <Card >
             <CardHeader>
               <CardTitle>Criar Conta</CardTitle>
               <CardDescription>
