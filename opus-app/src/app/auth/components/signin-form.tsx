@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
+import { authClient } from "@/lib/auth-client"
 
 const loginForm = z.object({
   email: z.string().trim().min(1).email({message: "Email inválido"}),
@@ -21,8 +22,17 @@ const SigninForm = () => {
     },
   });
 
-  function onSubmit(data: z.infer<typeof loginForm>) {
-    console.log("Form submitted with data:", data);
+  async function onSubmit(values: z.infer<typeof loginForm>) {
+
+    const { data, error } = await authClient.signIn.email({
+        email: values.email,
+        password: values.password,
+        callbackURL: "/dashboard",
+        rememberMe: false
+}, {
+    //callbacks
+})
+
   }
 
 
@@ -76,7 +86,7 @@ const SigninForm = () => {
                   )}
                 />
                 
-                <Button type="submit" className="w-full">Criar Conta</Button>
+                <Button type="submit" className="w-full">Entrar</Button>
               </form>
             </Form >
             </CardContent>
