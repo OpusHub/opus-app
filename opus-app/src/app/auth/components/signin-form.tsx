@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { authClient } from "@/lib/auth-client"
+import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 
 const loginForm = z.object({
   email: z.string().trim().min(1).email({message: "Email inválido"}),
@@ -30,7 +32,9 @@ const SigninForm = () => {
         callbackURL: "/dashboard",
         rememberMe: false
 }, {
-    //callbacks
+   onError: (error) => {
+     toast.error("Senha ou email inválidos");
+   }
 })
 
   }
@@ -86,7 +90,14 @@ const SigninForm = () => {
                   )}
                 />
                 
-                <Button type="submit" className="w-full">Entrar</Button>
+              <Button
+                type="submit"
+                className="w-full"
+                >
+                { form.formState.isSubmitting ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
+                ) : ( "Entrar")}
+                </Button>
               </form>
             </Form >
             </CardContent>

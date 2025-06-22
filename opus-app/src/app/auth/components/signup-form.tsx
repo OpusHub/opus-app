@@ -8,6 +8,7 @@ import { z } from "zod"
 import { authClient } from "@/lib/auth-client"
 import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 const resgisterSchema = z.object({
   name: z.string().trim().min(1, {message: "Nome é obrigatório"}),
@@ -31,6 +32,14 @@ const SignupForm = () => {
   });
 
   async function onSubmit(data: z.infer<typeof resgisterSchema>) {
+    if (data.password !== data.confirmPassword) {
+        form.setError("confirmPassword", {
+            type: "manual",
+            message: "As senhas não coincidem",
+        });
+        return;
+    }
+
     await authClient.signUp.email({
         email: data.email,
         password: data.password,
@@ -42,8 +51,14 @@ const SignupForm = () => {
             router.push('/dashboard');
         },
         onError: (error) => {
-            console.error("Error during signup:", error);
-        },
+           if (error.error.status === 422) 
+            {
+              toast.error("Já existe uma conta com esse email");
+            }
+            else {
+                toast.error("Erro ao criar conta, tente novamente mais tarde");
+            }
+        }
     })
 
   }
