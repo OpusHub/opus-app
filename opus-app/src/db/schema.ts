@@ -87,18 +87,16 @@ export const agentTable = pgTable("agents", {
 export const companysTable = pgTable("companies", {
     id: uuid('id').primaryKey().defaultRandom(),
     name: text('name').notNull(),
-    description: text('description').notNull(),
     logoImageUrl: text('logo_image').notNull(),
     userId: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updateAt: timestamp('update_at').notNull().defaultNow(),
     address: text('address').notNull(),
     phone: text('phone').notNull(),
-    email: text('email').notNull(),
-    website: text('website').notNull(),
-    socialMedia: text('social_media').notNull(), // JSON or text field for social media links
+    website: text('website'),
+    linkedin: text('linkedin'),
+    instagram: text('instagram'), // JSON or text field for social media links
     industry: text('industry').notNull(), // Industry type
-
 });
 
 export const customersTable = pgTable("customers", {

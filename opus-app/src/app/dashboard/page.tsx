@@ -15,14 +15,14 @@ const DashboardPage =  async () => {
     return redirect('/auth')
   } 
 
-  const companies = await db.query.companysTable.findMany({
+  const [companies] = await db.query.companysTable.findMany({
     where: (company, { eq }) => eq(company.userId, session.user.id),
     with: {
       user: true,
     },
   });
 
-  if (companies.length < 1) {
+  if (companies.id === undefined) {
     return redirect('/company-form');
   }
 
@@ -30,6 +30,7 @@ const DashboardPage =  async () => {
     <div className="flex flex-col items-center justify-center h-screen">
       <h1 className="text-4xl font-bold mb-4">Dashboard</h1>
       <p className="text-lg">Olá {session?.user.name}</p>
+      <p>Como vai a {companies.name}?</p>
       <SignOutButton />
     </div>
   );
