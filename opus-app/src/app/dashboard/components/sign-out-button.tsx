@@ -9,8 +9,14 @@ const SignOutButton = () => {
     const router = useRouter();
   return <Button onClick={ () => { 
 
-    authClient.signOut();
-    router.push("/auth");
+    authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/auth");
+        }
+      }
+    });
+    
 
   }}>Sair</Button>;
 };

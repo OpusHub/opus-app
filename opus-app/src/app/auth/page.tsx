@@ -1,10 +1,20 @@
-'use client';
-
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import SignupForm from "./components/signup-form";
 import SigninForm from "./components/signin-form";
+import { auth } from "@/lib/auth";
+import { headers } from "next/dist/server/request/headers";
+import { redirect } from "next/navigation";
 
-const AuthPage = () => {
+const AuthPage = async () => {
+  const session = await auth.api.getSession({
+      headers: await headers()
+    });
+  
+    
+    if (session?.user) {
+      redirect('/dashboard');
+    }
+  
 
   return (
     <div className="flex h-screen w-full flex-col items-center justify-center gap-6">

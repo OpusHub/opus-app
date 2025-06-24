@@ -10,9 +10,11 @@ export const usersTable = pgTable("users", {
  email: text('email').notNull().unique(),
  emailVerified: boolean('email_verified').notNull(),
  image: text('image'),
+ slug: text('slug').unique(),
  createdAt: timestamp('created_at').notNull(),
  updatedAt: timestamp('updated_at').notNull()
 });
+
 
 
 export const authSessionsTable = pgTable("sessions", {
@@ -76,10 +78,28 @@ export const agentTable = pgTable("agents", {
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updateAt: timestamp('update_at').notNull().defaultNow(),
     totalMsg: integer('total_msg').notNull().default(0),
+    sdr_mode: text('sdr_mode').notNull().default('off'),
+    schedule_mode: text('schedule_mode').notNull().default('link'),
     question_alvo: text('question_alvo').notNull().default(''),
     qualification_role: text('qualification_role').notNull().default(''),
 });
 
+export const companysTable = pgTable("companies", {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    description: text('description').notNull(),
+    logoImageUrl: text('logo_image').notNull(),
+    userId: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updateAt: timestamp('update_at').notNull().defaultNow(),
+    address: text('address').notNull(),
+    phone: text('phone').notNull(),
+    email: text('email').notNull(),
+    website: text('website').notNull(),
+    socialMedia: text('social_media').notNull(), // JSON or text field for social media links
+    industry: text('industry').notNull(), // Industry type
+
+});
 
 export const customersTable = pgTable("customers", {
     id: uuid('id').primaryKey().defaultRandom(),
@@ -147,7 +167,17 @@ export const userTableRelations =  relations(usersTable, ({ many , one}) => ({
     sessions: many(sessionsTable),
     faq: many(faqTable),
     instances: many(instancesTable),
+    companies: many(companysTable),
 }));
+
+export const companyTableRelations = relations(companysTable, ({ one }) => ({
+    user: one(usersTable, { 
+        fields: [companysTable.userId],
+        references: [usersTable.id],
+    }),
+}));
+
+
 
 export const agentTableRelations = relations(agentTable, ({ one, many }) => ({
     user: one(usersTable, {

@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -16,7 +18,7 @@ const loginForm = z.object({
 
 
 const SigninForm = () => {
-  const  form = useForm<z.infer<typeof loginForm>>({
+  const form = useForm<z.infer<typeof loginForm>>({
     resolver: zodResolver(loginForm),
     defaultValues: {
       email: "",
@@ -49,7 +51,7 @@ const SigninForm = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
-               <Form {...form}>
+              <Form {...form}>
               <form
                onSubmit={form.handleSubmit(onSubmit)}
                className="space-y-4"
@@ -99,7 +101,7 @@ const SigninForm = () => {
                 ) : ( "Entrar")}
                 </Button>
               </form>
-            </Form >
+              </Form >
             </CardContent>
           </Card>
     )

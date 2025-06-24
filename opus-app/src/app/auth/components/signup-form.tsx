@@ -1,3 +1,4 @@
+'use client'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -7,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { authClient } from "@/lib/auth-client"
 import { Loader2 } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { redirect, useRouter } from "next/navigation"
 import { toast } from "sonner"
 
 const resgisterSchema = z.object({
@@ -19,7 +20,7 @@ const resgisterSchema = z.object({
 
 
 const SignupForm = () => {
-    const router = useRouter()
+  const router = useRouter()
  
   const  form = useForm<z.infer<typeof resgisterSchema>>({
     resolver: zodResolver(resgisterSchema),
@@ -43,8 +44,7 @@ const SignupForm = () => {
     await authClient.signUp.email({
         email: data.email,
         password: data.password,
-        name: data.name,
-        callbackURL: '/dashboard',
+        name: data.name
     } , {
         onSuccess: () => {
             form.reset();

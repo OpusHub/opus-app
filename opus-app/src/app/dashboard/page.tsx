@@ -1,8 +1,8 @@
-import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import SignOutButton from "./components/sign-out-button";
-import NavigateToAuthButton from "./components/session-off-navigate-for-auth-button";
+import { redirect } from "next/navigation";
+import db from "@/db";
 
 
 const DashboardPage =  async () => {
@@ -11,15 +11,20 @@ const DashboardPage =  async () => {
   });
 
   
-  if (!session?.user.name) {
-   
-    return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <NavigateToAuthButton />
-    </div>
-  );
-}
+  if (!session?.user) {
+    return redirect('/auth')
+  } 
 
+  const companies = await db.query.companysTable.findMany({
+    where: (company, { eq }) => eq(company.userId, session.user.id),
+    with: {
+      user: true,
+    },
+  });
+
+  if (companies.length < 1) {
+    return redirect('/company-form');
+  }
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
