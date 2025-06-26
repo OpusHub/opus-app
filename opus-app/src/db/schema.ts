@@ -1,5 +1,7 @@
 import { relations } from "drizzle-orm";
 import { boolean, integer, interval, pgEnum, pgTable, text, time, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { spec } from "node:test/reporters";
+import { id } from "zod/v4/locales";
 
 
 
@@ -27,6 +29,8 @@ export const authSessionsTable = pgTable("sessions", {
     userAgent: text('user_agent'),
     userId: text('user_id').notNull().references(()=> usersTable.id, { onDelete: 'cascade' })
 });
+
+
 
 export const accountsTable= pgTable("accounts", {
                     id: text('id').primaryKey(),
@@ -64,6 +68,28 @@ export const instancesTable = pgTable("instances", {
     createdAt: timestamp('created_at').notNull().defaultNow(),
     userId: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }), 
     updateAt: timestamp('update_at').notNull().defaultNow(),
+    professionalId: uuid('professional_id').notNull().references(() => professionalsTable.id, { onDelete: 'cascade' }),
+});
+
+export const servicesTable = pgTable("services", {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    description: text('description').notNull(),
+    status: text('status').notNull().default('enabled'),
+    userId: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updateAt: timestamp('update_at').notNull().defaultNow(),
+    duration: integer('duration').notNull().default(30), // Duration in minutes
+    price: integer('price').notNull().default(0),
+    ai_list: boolean('ai_list').notNull().default(true), // List of AI models
+});
+
+// Tabela de vínculo entre serviços e profissionais (users)
+export const serviceProfessionalsTable = pgTable("service_professionals", {
+    id: uuid('id').primaryKey().defaultRandom(),
+    serviceId: uuid('service_id').notNull().references(() => servicesTable.id, { onDelete: 'cascade' }),
+    professionalId: uuid('professional_id').notNull().references(() => professionalsTable.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
 export const agentTable = pgTable("agents", {
@@ -132,7 +158,8 @@ export const scheduleRolesTable = pgTable("schedule_roles", {
     days_worked: text('days_worked').notNull(), // Comma-separated values for days worked
     slot_duration: integer('slot_duration').notNull(), // Duration in minutes
     slots_interval: interval('interval').notNull(), // Interval between slots
-    userID: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }), 
+    userID: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
+    professionalId: uuid('professional_id').notNull().references(() => professionalsTable.id, { onDelete: 'cascade' }),
 });
 
 export const faqTable = pgTable("faqs", {
@@ -154,8 +181,34 @@ export const sessionsTable = pgTable("agent_sessions", {
     etapa: text('etapa').notNull()
 });
 
+export const professionalsTable = pgTable("professionals", {
+    id: uuid('id').primaryKey().defaultRandom(),
+    name: text('name').notNull(),
+    email: text('email').notNull().unique(),
+    phone: text('phone').notNull(),
+    avatarImageUrl: text('avatar_image').notNull(),
+    userId: text('user_id').notNull().references(() => usersTable.id,
+        { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    specialization: text('specialization').notNull(),
+    bio: text('bio').notNull(),
+});
+
+
 
 // RELATIONS 
+
+export const professionalsTableRelations = relations(professionalsTable, ({ one }) => ({
+    user: one(usersTable, {
+        fields: [professionalsTable.userId],
+        references: [usersTable.id],
+    }),
+    scheduleRolesTable: one(scheduleRolesTable, {
+        fields: [professionalsTable.id],
+        references: [scheduleRolesTable.professionalId],
+    }),
+}));
 
 export const userTableRelations =  relations(usersTable, ({ many , one}) => ({
     agents: many(agentTable),
@@ -175,7 +228,24 @@ export const companyTableRelations = relations(companysTable, ({ one }) => ({
     }),
 }));
 
+export const servicesTableRelations = relations(servicesTable, ({ one, many }) => ({
+    user: one(usersTable, {
+        fields: [servicesTable.userId],
+        references: [usersTable.id],
+    }),
+    professionals: many(serviceProfessionalsTable),
+}));
 
+export const serviceProfessionalsTableRelations = relations(serviceProfessionalsTable, ({ one }) => ({
+    service: one(servicesTable, {
+        fields: [serviceProfessionalsTable.serviceId],
+        references: [servicesTable.id],
+    }),
+    professional: one(usersTable, {
+        fields: [serviceProfessionalsTable.professionalId],
+        references: [usersTable.id],
+    }),
+}));
 
 export const agentTableRelations = relations(agentTable, ({ one, many }) => ({
     user: one(usersTable, {
@@ -196,6 +266,10 @@ export const instanceTableRelations = relations(instancesTable, ({ one }) => ({
     user: one(usersTable ,  { 
         fields: [instancesTable.userId],
         references: [usersTable.id],
+    }),
+    professionalsTable: one(professionalsTable, {
+        fields: [instancesTable.professionalId],
+        references: [professionalsTable.id],
     }),
 }));
 
@@ -247,7 +321,11 @@ export const scheduleRolesTableRelations = relations(scheduleRolesTable, ({ one 
     user: one(usersTable, {
         fields: [scheduleRolesTable.userID],
         references: [usersTable.id],
-    })
+    }),
+    professionalsTable: one(professionalsTable, {
+        fields: [scheduleRolesTable.professionalId],
+        references: [professionalsTable.id],
+    }),
 }));
 export const faqTableRelations = relations(faqTable, ({ one }) => ({
     user: one(usersTable, {
