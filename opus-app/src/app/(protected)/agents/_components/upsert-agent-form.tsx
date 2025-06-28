@@ -9,7 +9,9 @@ import {
 } from "@/components/ui/select";
 
 import {
+  DialogClose,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -36,14 +38,20 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
-  name: z.string().min(2).max(100),
-  tom: z.string().max(100).optional(),
-  about: z.string().max(1000).optional(),
-  type: z.enum(["SDR", "Suporte"]),
-  question_alvo: z.string().max(500).optional(),
-  qualification_roles: z.string().max(500).optional(),
+  name: z.string().min(2, {message: "Nome do seu agente ter que ter no minimo 2 caracteres."}).max(100, {message: "Limite de 100 carateres atingido. "}),
+  tom: z.string().max(100, {message: "Limite de 100 carateres atingido. "}).optional(),
+  about: z.string().max(1000, {message: "Limite de 1.000 carateres atingido. "}).optional(),
+  type: z.enum(["SDR",
+    "Suporte",
+    "Vendas",
+    "Marketing",
+    "Financeiro",
+    "RH",]).optional(),
+  question_alvo: z.string().max(500,{message: "Limite de 500 carateres atingido. "}).optional(),
+  qualification_roles: z.string().max(500, {message: "Limite de 500 carateres atingido. "}).optional(),
 });
 
 const UpsertAgentForm = () => {
@@ -53,7 +61,7 @@ const UpsertAgentForm = () => {
       name: "",
       tom: "",
       about: "",
-      type: "SDR",
+      type: undefined,
       question_alvo: "",
       qualification_roles: "",
     },
@@ -72,6 +80,7 @@ const UpsertAgentForm = () => {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     // Handle form submission logic here
     console.log("Form submitted with values:", values);
+    form.reset()
   }
 
   return (
@@ -126,81 +135,92 @@ const UpsertAgentForm = () => {
                   />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
+              </FormItem>              
+              )}
+              />
 
-          <FormField
-            control={form.control}
-            name="tom"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Tipo do agente
-                </FormLabel>
+              <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                <FormLabel>Tipo do agente</FormLabel>
                 <FormControl>
-                  <Select  > 
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Tipo do agente" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {
-                          typesAgentOptions.map((option) => (
-                            <SelectItem key={option} value={option}>
-                              {option}
-                            </SelectItem>
-                          ))}
-                    </SelectContent>
+                  <Select
+                  value={field.value}
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    setSelectedType(value);
+                  }}
+                  >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Tipo do agente" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {typesAgentOptions.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                    ))}
+                  </SelectContent>
                   </Select>
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
+                </FormItem>
+              )}
+              />
 
+          {
+            selectedType == 'SDR' ? (
+              <>
+                <FormField
+                  control={form.control}
+                  name="question_alvo"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Perguntas Alvo</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="Ex: Qual o faturamento mensal"
+                          className="max-h-32"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-          <FormField
-            control={form.control}
-            name="question_alvo"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                    Perguntas Alvo
-                </FormLabel>
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    placeholder="Ex: Qual o faturamento mensal"
-                    className="max-h-32"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+                <FormField
+                  control={form.control}
+                  name="qualification_roles"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Critério de Qualificação</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="Ex: Lead deve ter um faturamento mensal maior que 50k "
+                          className="max-h-32"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            ) : <></>
+          }
+          <DialogFooter className="w-full flex items-center justify-end">
+            <Button type="submit" className="w-full">
+            {form.formState.isSubmitting ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              "Criar"
             )}
-          />
-
-          <FormField
-            control={form.control}
-            name="qualification_roles"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Critério de Qualificação
-                </FormLabel>
-                <FormControl>
-                  <Textarea
-                    {...field}
-                    placeholder="Ex: Lead deve ter um faturamento mensal maior que 50k "
-                    className="max-h-32"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        <Button>Criar</Button>
+          </Button>
+          </DialogFooter>
         </form>
-
       </Form>
     </DialogContent>
   );
