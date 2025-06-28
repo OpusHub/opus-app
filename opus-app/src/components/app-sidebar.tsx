@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   Calendar,
@@ -7,6 +7,7 @@ import {
   BotMessageSquare,
   UsersRound,
   LogOutIcon,
+  Settings2,
 } from "lucide-react";
 
 import {
@@ -31,49 +32,53 @@ import {
 } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { Avatar, AvatarFallback } from "./ui/avatar";
 
 // Menu items.
 const items = [
   {
     title: "Dashboard",
-    url: "#",
+    url: "/dashboard",
     icon: ChartColumnBig,
   },
   {
     title: "Clientes",
-    url: "#",
+    url: "/clients",
     icon: UsersRound,
   },
   {
     title: "Agenda",
-    url: "#",
+    url: "/calendar",
     icon: Calendar,
   },
   {
     title: "Agentes",
-    url: "#",
+    url: "/agents",
     icon: BotMessageSquare,
   },
   {
     title: "Configurações",
-    url: "#",
+    url: "/settings",
     icon: Settings,
   },
 ];
 
 export function AppSidebar() {
-  const router = useRouter();
+  const router = useRouter(); 
+  const pathname = usePathname();
+
+  const session = authClient.useSession();
 
   const handleSignOut = async () => {
     try {
       await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/auth");
-        }
-      }
-    });
+        fetchOptions: {
+          onSuccess: () => {
+            router.push("/auth");
+          },
+        },
+      });
     } catch (error) {
       console.error("Error signing out:", error);
     }
@@ -90,8 +95,8 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                <SidebarMenuItem key={item.title} >
+                  <SidebarMenuButton asChild isActive={pathname === item.url}>
                     <Link href={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
@@ -103,17 +108,32 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter >
         <SidebarMenu>
-          <SidebarMenuItem className="w-1/2" >
+          <SidebarMenuItem >
             <DropdownMenu >
-              <DropdownMenuTrigger asChild className="w-full">
-                <Button variant="outline">Empresa</Button>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton className="size-lg">
+                  <Avatar>
+                    <AvatarFallback>{session.data?.user?.name?.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div >
+                    <p className="text-sm ">
+                      {session.data?.user?.company?.name}
+                    </p>
+                    <p className="text-muted-foreground text-sm">
+                      {session.data?.user?.email}
+                    </p>
+                  </div>
+                </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => handleSignOut()}>
                   <LogOutIcon />
                   Sair
+                </DropdownMenuItem><DropdownMenuItem >
+                  <Settings />
+                  Configurações Da Conta
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
