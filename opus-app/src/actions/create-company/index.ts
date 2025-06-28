@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 export async function createCompany(data: FormData) {
+  
   const session = await auth.api.getSession({
     headers: await headers(),
   });
@@ -45,10 +46,10 @@ export async function createCompany(data: FormData) {
     userId: session.user.id
   };
 
-  const [company] = await db
+  await db
     .insert(companysTable)
     .values(companyData)
     .returning();
-;
+  
     redirect("/dashboard");
 }

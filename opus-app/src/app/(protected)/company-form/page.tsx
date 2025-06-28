@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import CreateCompanyForm from "./components/new-company-form";
+import CreateCompanyForm from "./_components/new-company-form";
 import { auth } from "@/lib/auth";
 import { headers } from "next/dist/server/request/headers";
 import { redirect } from "next/navigation";
