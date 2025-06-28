@@ -8,6 +8,7 @@ import {
   PageTitle,
 } from "@/components/page-container";
 import { Button } from "@/components/ui/button";
+import {AddAgentButton} from "./_components/add-agent-button";
 
 const AgentsPage = () => {
   return (
@@ -20,7 +21,7 @@ const AgentsPage = () => {
           </PageDescription>
         </PageHeaderContent>
         <PageActions>
-          <Button>Adicionar Agente</Button>
+            <AddAgentButton />
         </PageActions>
       </PageHeader>
       <PageContent>
