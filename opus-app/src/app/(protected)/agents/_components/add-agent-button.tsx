@@ -13,7 +13,7 @@ const AddAgentButton = () => {
            Adicionar Agente
          </Button>
        </DialogTrigger>
-       <UpsertAgentForm />
+       <UpsertAgentForm title="Criar Agente"/>
     </Dialog>
   );
 };

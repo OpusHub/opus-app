@@ -16,13 +16,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
   Form,
   FormControl,
   FormField,
@@ -33,28 +26,47 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { DropdownMenu } from "@radix-ui/react-dropdown-menu";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const formSchema = z.object({
-  name: z.string().min(2, {message: "Nome do seu agente ter que ter no minimo 2 caracteres."}).max(100, {message: "Limite de 100 carateres atingido. "}),
-  tom: z.string().max(100, {message: "Limite de 100 carateres atingido. "}).optional(),
-  about: z.string().max(1000, {message: "Limite de 1.000 carateres atingido. "}).optional(),
-  type: z.enum(["SDR",
+  name: z
+    .string()
+    .min(2, { message: "Nome do seu agente tem que ter no mínimo 2 caracteres." })
+    .max(100, { message: "Limite de 100 caracteres atingido." }),
+  tom: z
+    .string()
+    .max(100, { message: "Limite de 100 caracteres atingido." })
+    .nonempty({ message: "Campo obrigatório." }),
+  about: z
+    .string()
+    .max(1000, { message: "Limite de 1.000 caracteres atingido." })
+    .nonempty({ message: "Campo obrigatório." }),
+  type: z.enum([
+    "SDR",
     "Suporte",
     "Vendas",
     "Marketing",
     "Financeiro",
-    "RH",]).optional(),
-  question_alvo: z.string().max(500,{message: "Limite de 500 carateres atingido. "}).optional(),
-  qualification_roles: z.string().max(500, {message: "Limite de 500 carateres atingido. "}).optional(),
+    "RH",
+  ], { 
+    required_error: "Tipo do agente é obrigatório." 
+  }),
+  question_alvo: z
+    .string()
+    .max(500, { message: "Limite de 500 caracteres atingido." })
+    .optional(),
+  qualification_roles: z
+    .string()
+    .max(500, { message: "Limite de 500 caracteres atingido." })
+    .optional(),
 });
 
-const UpsertAgentForm = () => {
+const UpsertAgentForm = ({ title }: { title: string }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -85,6 +97,7 @@ const UpsertAgentForm = () => {
 
   return (
     <DialogContent>
+      <DialogTitle>{title}</DialogTitle>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
@@ -216,7 +229,7 @@ const UpsertAgentForm = () => {
             {form.formState.isSubmitting ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
-              "Criar Agente"
+              "Salvar"
             )}
           </Button>
           </DialogFooter>
