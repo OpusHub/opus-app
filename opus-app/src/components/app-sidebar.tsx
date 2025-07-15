@@ -53,7 +53,7 @@ const items = [
     icon: Calendar,
   },
   {
-    title: "Agentes",
+    title: "Meu Agente",
     url: "/agents",
     icon: BotMessageSquare,
   },
@@ -113,7 +113,7 @@ export function AppSidebar() {
           <SidebarMenuItem >
             <DropdownMenu >
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="size-lg">
+                <SidebarMenuButton className="size-lg py-6">
                   <Avatar>
                     <AvatarFallback>{session.data?.user?.name?.charAt(0)}</AvatarFallback>
                   </Avatar>

@@ -15,9 +15,9 @@ const AgentsPage = () => {
     <PageContainer>
       <PageHeader>
         <PageHeaderContent>
-          <PageTitle>Agentes</PageTitle>
+          <PageTitle>Meu Agente</PageTitle>
           <PageDescription>
-            Gerencie seus agentes de atendimento
+            Gerencie seu agente de atendimento
           </PageDescription>
         </PageHeaderContent>
         <PageActions>
@@ -25,7 +25,7 @@ const AgentsPage = () => {
         </PageActions>
       </PageHeader>
       <PageContent>
-        Agentes
+        Agente
       </PageContent>
     </PageContainer>
   );
