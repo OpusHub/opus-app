@@ -11,6 +11,7 @@ import {
 import {
   DialogClose,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -34,6 +35,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { upsertAgent } from "@/actions/create-company/upsert-agent";
 import { useAction } from 'next-safe-action/hooks'
+import { agentTable } from "@/db/schema";
 
 const formSchema = z.object({
   name: z
@@ -69,20 +71,22 @@ const formSchema = z.object({
 });
 
 interface UpsertAgentFormProps { 
+  agent?: typeof agentTable.$inferSelect;
   onSuccess?: () => void;
 }
 
-const UpsertAgentForm = ({ title, onSuccess }: { title: string, onSuccess?: () => void }) => {
+const UpsertAgentForm = ({ title, onSuccess , agent}: { title: string, onSuccess?: () => void , agent?:typeof agentTable.$inferSelect  }) => {
 
   const form = useForm<z.infer<typeof formSchema>>({
+    shouldUnregister: true, 
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      tom: "",
-      about: "",
-      type: undefined,
-      question_alvo: "",
-      qualification_roles: "",
+      name: agent?.name || "",
+      tom: agent?.tom || "",
+      about: agent?.about || "",
+      type: (["SDR", "Suporte", "Vendas", "Marketing", "Financeiro", "RH"] as const).includes(agent?.type as any) ? agent?.type as typeof formSchema.shape.type._type : undefined,
+      question_alvo: agent?.question_alvo || "",
+      qualification_roles: agent?.qualification_role || "",
     },
   });
   const typesAgentOptions = [
@@ -98,27 +102,28 @@ const UpsertAgentForm = ({ title, onSuccess }: { title: string, onSuccess?: () =
 
   const upsertAgentAction = useAction(upsertAgent, {
     onSuccess: () => {
-      toast.success("Agente Criado com Sucesso")
+      toast.success("Salvo com Sucesso")
       if (onSuccess) onSuccess();
     },
     onError: () => {
-      toast.error('Erro ao criar agente')
+      toast.error('Erro ao salvar')
     }
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
 
     upsertAgentAction.execute({
-      ...values
+      ...values,
+      id: agent?.id
     });
-    // Handle form submission logic here
-    console.log("Form submitted with values:", values);
+    
     form.reset()
   }
 
   return (
     <DialogContent>
       <DialogTitle>{title}</DialogTitle>
+      <DialogDescription> {  agent  ? 'Edite as configurações do agente' :  "Crie um novo agente"}</DialogDescription>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField

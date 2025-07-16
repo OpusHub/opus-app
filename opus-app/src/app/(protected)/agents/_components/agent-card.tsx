@@ -1,3 +1,5 @@
+'use client'
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +18,9 @@ interface AgentCardProps {
   agent: typeof agentTable.$inferSelect;
 }
 
-const AgentCard = ({ agent }: AgentCardProps) => {
+const AgentCard = ({ agent }: AgentCardProps) => {  
+    const [isOpen, setIsOpen] = useState(false)
+
   const agentInitials = agent.name
     .split(" ")
     .map((name) => name[0])
@@ -49,12 +53,12 @@ const AgentCard = ({ agent }: AgentCardProps) => {
         <p className="text-muted-foreground text-sm">{agent.about}</p>
       </CardContent>
       <CardFooter>
-        <Dialog>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button className="w-full">Ver Detalhes</Button>
           </DialogTrigger>
 
-          <UpsertAgentForm title="Editar Agente"></UpsertAgentForm>
+          <UpsertAgentForm title="Editar Agente" agent={agent} onSuccess={() => setIsOpen(false)}></UpsertAgentForm>
         </Dialog>
       </CardFooter>
     </Card>
