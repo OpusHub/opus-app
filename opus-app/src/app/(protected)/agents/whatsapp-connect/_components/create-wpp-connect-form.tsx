@@ -34,7 +34,7 @@ import { Loader2,  TrashIcon } from "lucide-react";
 import { toast } from "sonner";
 import { upsertFaq } from "@/actions/upsert-faq";
 import { useAction } from "next-safe-action/hooks";
-import { faqTable } from "@/db/schema";
+import { instancesTable } from "@/db/schema";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,43 +46,46 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { deleteFaq } from "@/actions/delete-faq";
+import { upsertInstance } from "@/actions/upsert-instance";
+import { deleteInstance } from "@/actions/delete-instance";
 
 const formSchema = z.object({
-  question: z
+  name: z
     .string()
-    .max(100, { message: "Limite de 100 caracteres atingido." }).nonempty({ message: "Campo obrigatório." }),
-  answer: z
-    .string()
-    .nonempty({ message: "Campo obrigatório." }),
+    .max(20, { message: "Limite de 20 caracteres atingido." }).nonempty({ message: "Campo obrigatório." }),
+  number: z.string().max(18, { message : "Máximo de caracteres atingido"}).nonempty({message : "Campo obrigatório"}),
   userId: z
     .string().uuid().optional()
 });
 
-interface UpsertFaqFormProps {
-  faq?: typeof faqTable.$inferSelect;
+interface UpsertInstanceFormProps {
+  instance?: typeof instancesTable.$inferSelect;
   onSuccess?: () => void;
 }
 
-const UpsertFaqForm = ({
+const UpsertInstanceForm = ({
   title,
+  description,
   onSuccess,
-  faq,
+  instance,
 }: {
   title: string;
+  description: string;
   onSuccess?: () => void;
-  faq?: typeof faqTable.$inferSelect;
+  instance?: typeof instancesTable.$inferSelect;
 }) => {
+
+
   const form = useForm<z.infer<typeof formSchema>>({
     shouldUnregister: true,
     resolver: zodResolver(formSchema),
     defaultValues: {
-      question: faq?.question || "",
-      answer: faq?.answer || ""
+      name: instance?.name || "",
+      number: instance?.number || ""
     },
   });
 
-  const upsertFaqAction = useAction(upsertFaq, {
+  const upsertInstanceAction = useAction(upsertInstance, {
     onSuccess: () => {
       toast.success("Salvo com Sucesso");
       if (onSuccess) onSuccess();
@@ -92,7 +95,7 @@ const UpsertFaqForm = ({
     },
   });
 
-   const deleteAgentAction = useAction(deleteFaq, {
+   const deleteInstanceAction = useAction(deleteInstance, {
      onSuccess: () => {
        toast.success("Deletado com Sucesso");
        if (onSuccess) onSuccess();
@@ -103,16 +106,19 @@ const UpsertFaqForm = ({
    })
 
    const handleDeleteFaqClick = () => {
-     if (!faq) {
+     if (!instance) {
        return;
      }
-     deleteAgentAction.execute({ id: faq.id});
+     deleteInstanceAction.execute({ id: instance.id});
    }
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    upsertFaqAction.execute({
+    upsertInstanceAction.execute({
       ...values,
-      id: faq?.id,
+      id: instance?.id,
+      status: "close",
+      name_id: values.name + '_' + values.userId,
+      token: " "
     });
 
     form.reset();
@@ -122,45 +128,66 @@ const UpsertFaqForm = ({
     <DialogContent>
       <DialogTitle>{title}</DialogTitle>
       <DialogDescription>
-        {" "}
-        {faq ? "Edite a pergunta" : "Crie uma nova pergunta para a base de conhecimento do agente"}
+        {description}
       </DialogDescription>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField
             control={form.control}
-            name="question"
+            name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Pergunta</FormLabel>
+                <FormLabel>Nome</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Ex: Qual o endereço?" type="text" />
+                  <Input {...field} placeholder="Ex: Wpp suporte" type="text" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="answer"
-            render={({ field }) => (
-              <FormItem>
+
+              <FormField
+              control={form.control}
+              name="number"
+              render={({ field }) => (
+                <FormItem>
                 <FormLabel>
-                  Resposta
+                  Número
                 </FormLabel>
                 <FormControl>
-                  <Textarea
-                    {...field}
-                    placeholder="Ex: Av das Nações 2856, Ap 05 - Santo André..."
-                    className="max-h-32"
+                  <Input
+                  {...field}
+                  placeholder="Ex: (11) 9 9796-4191"
+                  type="text"
+                  onChange={e => {
+                    const raw = e.target.value.replace(/\D/g, "");
+                    let formatted = "";
+                    if (raw.length <= 2) {
+                    formatted = raw;
+                    } else if (raw.length <= 7) {
+                    formatted = `(${raw.slice(0, 2)}) ${raw.slice(2)}`;
+                    } else if (raw.length === 11) {
+                    // (11) 9 9796-4191
+                    formatted = `(${raw.slice(0, 2)}) ${raw.slice(2, 3)} ${raw.slice(3, 7)}-${raw.slice(7, 11)}`;
+                    } else if (raw.length === 10 || raw.length === 12) {
+                    // (11) 9796-4191
+                    formatted = `(${raw.slice(0, 2)}) ${raw.slice(2, 6)}-${raw.slice(6, 10)}`;
+                    } else if (raw.length > 11) {
+                    formatted = `(${raw.slice(0, 2)}) ${raw.slice(2, 3)} ${raw.slice(3, 7)}-${raw.slice(7, 11)}`;
+                    } else {
+                    formatted = `(${raw.slice(0, 2)}) ${raw.slice(2, 3)} ${raw.slice(3, 7)}-${raw.slice(7, 11)}`;
+                    }
+                    field.onChange(formatted);
+                  }}
+                  value={field.value}
                   />
                 </FormControl>
                 <FormMessage />
-              </FormItem>
-            )}
-          />
+                </FormItem>
+              )}
+              />
           <DialogFooter className="flex  w-full items-center justify-between">
-            {faq && (
+            {instance && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button className="cursor-pointer bg-background border  hover:bg-red-800" >
@@ -174,7 +201,7 @@ const UpsertFaqForm = ({
                       Você tem certeza dessa ação ?
                     </AlertDialogTitle>
                     <AlertDialogDescription>
-                      Essa ação não tem retorno. Isso irá apagar permanentemente os dados desse agente.
+                      Essa ação não tem retorno. Isso irá apagar permanentemente a conexão.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -188,7 +215,7 @@ const UpsertFaqForm = ({
             <Button
               type="submit"
               className="cursor-pointer"
-              disabled={upsertFaqAction.isPending}
+              disabled={upsertInstanceAction.isPending}
             >
               {form.formState.isSubmitting ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -202,4 +229,4 @@ const UpsertFaqForm = ({
     </DialogContent>
   );
 };
-export { UpsertFaqForm };
+export { UpsertInstanceForm };

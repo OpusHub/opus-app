@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { UpsertInstanceForm } from "./create-wpp-connect-form";
 
 const AddWppButton = () => {
   
@@ -16,6 +17,7 @@ const [dialogIsOpen, setDialogIsOpen] = useState(false)
            Criar Conexão
          </Button>
        </DialogTrigger>
+       <UpsertInstanceForm title="Criar conexão" description="Crie uma nova conexão com o whatsapp" onSuccess={() => setDialogIsOpen(false)}></UpsertInstanceForm>
     </Dialog>
   );    
 };

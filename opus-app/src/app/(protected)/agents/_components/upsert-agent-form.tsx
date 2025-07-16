@@ -116,7 +116,7 @@ const UpsertAgentForm = ({
     "RH",
   ];
 
-  const [selectedType, setSelectedType] = useState<string>("SDR");
+  const [selectedType, setSelectedType] = useState(agent?.type);
 
   const upsertAgentAction = useAction(upsertAgent, {
     onSuccess: () => {

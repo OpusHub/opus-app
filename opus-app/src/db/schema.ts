@@ -63,6 +63,7 @@ export const instancesTable = pgTable("instances", {
     id: uuid('id').primaryKey().defaultRandom(),
     name: text('name').notNull(),
     name_id: text('name_id').notNull().unique(),
+    number: text('number'),
     token: text('token').notNull(),
     status: text('status').notNull().default('open'),
     createdAt: timestamp('created_at').notNull().defaultNow(),

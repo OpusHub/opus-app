@@ -1,8 +1,24 @@
 import { PageActions, PageContainer, PageContent, PageDescription, PageHeader, PageHeaderContent, PageTitle } from "@/components/page-container";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { AddFaqButton } from "./_components/add-faq-button";
+import FaqCard from "./_components/faq-card";
+import db from "@/db";
+import { eq } from "drizzle-orm";
+import { auth } from "@/lib/auth";
+import { faqTable } from "@/db/schema";
+import { headers } from "next/headers";
 
-const FaqAgentPage = () => {
+const FaqAgentPage = async () => {
+
+const session = await auth.api.getSession({
+    headers : await headers(),
+  })
+  
+  const faqs = session?.user?.id
+    ? await db.query.faqTable.findMany({
+where: eq(faqTable.userId, session.user.id)      })
+    : [];
+
   return (
     <PageContainer>
       <PageHeader>
@@ -26,7 +42,9 @@ const FaqAgentPage = () => {
         </PageActions>
       </PageHeader>
       <PageContent>
-        Faq
+        <div className="grid grid-cols-1 space-y-6">
+          {faqs.map(faq => <FaqCard key={faq.id} faq={faq}></FaqCard>)}
+        </div>
       </PageContent>
     </PageContainer>
   );
