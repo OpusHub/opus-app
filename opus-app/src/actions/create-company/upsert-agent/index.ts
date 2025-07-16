@@ -5,6 +5,7 @@ import { agentTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { actionClient } from "@/lib/next-safe-action";
+import { revalidatePath } from "next/cache";
 
 
 export const upsertAgent = actionClient.schema(upsertAgentSchema).action(async ({parsedInput}) => {
@@ -33,4 +34,6 @@ await db.insert(agentTable).values({
     ...parsedInput
   }
 });
+
+revalidatePath('/agents')
 })

@@ -9,8 +9,25 @@ import {
 } from "@/components/page-container";
 import { Button } from "@/components/ui/button";
 import {AddAgentButton} from "./_components/add-agent-button";
+import db from "@/db";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { agentTable } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import AgentCard from "./_components/agent-card";
 
-const AgentsPage = () => {
+const AgentsPage = async () => {
+
+    const session = await auth.api.getSession({
+    headers : await headers(),
+  })
+  
+  const agents = session?.user?.id
+    ? await db.query.agentTable.findMany({
+where: eq(agentTable.userId, session.user.id)      })
+    : [];
+
+
   return (
     <PageContainer>
       <PageHeader>
@@ -25,7 +42,9 @@ const AgentsPage = () => {
         </PageActions>
       </PageHeader>
       <PageContent>
-        Agente
+        <div className="grid grid-cols-4 space-y-6">
+          {agents.map(agent => <AgentCard key={agent.id} agent={agent}></AgentCard>)}
+        </div>
       </PageContent>
     </PageContainer>
   );
