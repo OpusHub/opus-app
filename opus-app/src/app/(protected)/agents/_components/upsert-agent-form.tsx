@@ -33,7 +33,7 @@ import z from "zod";
 import { Button } from "@/components/ui/button";
 import { Loader2,  TrashIcon } from "lucide-react";
 import { toast } from "sonner";
-import { upsertAgent } from "@/actions/create-company/upsert-agent";
+import { upsertAgent } from "@/actions/upsert-agent";
 import { useAction } from "next-safe-action/hooks";
 import { agentTable } from "@/db/schema";
 import {
