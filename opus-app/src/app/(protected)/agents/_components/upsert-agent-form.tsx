@@ -32,6 +32,8 @@ import z from "zod";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { upsertAgent } from "@/actions/create-company/upsert-agent";
+import { useAction } from 'next-safe-action/hooks'
 
 const formSchema = z.object({
   name: z
@@ -66,7 +68,12 @@ const formSchema = z.object({
     .optional(),
 });
 
-const UpsertAgentForm = ({ title }: { title: string }) => {
+interface UpsertAgentFormProps { 
+  onSuccess?: () => void;
+}
+
+const UpsertAgentForm = ({ title, onSuccess }: { title: string, onSuccess?: () => void }) => {
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -89,7 +96,21 @@ const UpsertAgentForm = ({ title }: { title: string }) => {
 
   const [selectedType, setSelectedType] = useState<string>("SDR");
 
+  const upsertAgentAction = useAction(upsertAgent, {
+    onSuccess: () => {
+      toast.success("Agente Criado com Sucesso")
+      if (onSuccess) onSuccess();
+    },
+    onError: () => {
+      toast.error('Erro ao criar agente')
+    }
+  })
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
+
+    upsertAgentAction.execute({
+      ...values
+    });
     // Handle form submission logic here
     console.log("Form submitted with values:", values);
     form.reset()
@@ -225,7 +246,7 @@ const UpsertAgentForm = ({ title }: { title: string }) => {
             ) : <></>
           }
           <DialogFooter className="w-full flex items-center justify-end">
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled={upsertAgentAction.isPending}>
             {form.formState.isSubmitting ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
