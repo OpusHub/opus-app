@@ -32,24 +32,24 @@ const QrCodeRead = ({
   });
 
   const handleGenerateQRcode = () => {
-    setIsGenerateState(true)
+    setIsGenerateState(true);
     connectInstanceAction.execute({ name_id: instance_name });
-    setIsGenerateState(false)
+    setIsGenerateState(false);
   };
 
-  const checkConnectinInstanceAction = useAction(checkInstanceConnect, { 
+  const checkConnectinInstanceAction = useAction(checkInstanceConnect, {
     onSuccess: () => {
       toast.success("Instância conectada");
     },
     onError: () => {
       toast.error("Erro ao conectar, gere outro QR Code!");
     },
-  })
+  });
 
-  const handleCheckInstanceConnectionClick = () => { 
-    checkConnectinInstanceAction.execute({name_id: instance_name, id: id})
-  }
-  
+  const handleCheckInstanceConnectionClick = () => {
+    checkConnectinInstanceAction.execute({ name_id: instance_name, id: id });
+  };
+
   return (
     <DialogContent className="flex min-h-[600px] min-w-[700px] flex-col justify-between">
       <DialogHeader>
@@ -58,28 +58,33 @@ const QrCodeRead = ({
           Leia o QR Code abaixo para realizar a conexão{" "}
         </DialogDescription>
       </DialogHeader>
-      <div className="flex flex-col w-full items-center justify-center gap-4">
-        {
-          connectInstanceAction.result?.data?.qrcode ? 
-           <img src={connectInstanceAction.result?.data?.qrcode} alt="QR Code" className="max-w-xs" />: 
-           <Button
-          onClick={handleGenerateQRcode}
-          className="cursor-pointer bg-white text-black hover:text-white w-full"
-        >
-          {
-            isGenerateState == true ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin"/>
-                ) : ( "Gerar Qr Code")
-          }
-          
-        </Button> 
-
-        }
-        
-        
+      <div className="flex w-full flex-col items-center justify-center gap-4">
+        {connectInstanceAction.result?.data?.qrcode ? (
+          <img
+            src={connectInstanceAction.result?.data?.qrcode}
+            alt="QR Code"
+            className="max-w-xs"
+          />
+        ) : (
+          <Button
+            type="submit"
+            onClick={handleGenerateQRcode}
+            className="w-full cursor-pointer bg-white text-black hover:text-white"
+          >
+            {isGenerateState == true ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              "Gerar Qr Code"
+            )}
+          </Button>
+        )}
       </div>
       <DialogFooter>
-        <Button className="w-full" variant="secondary" onClick={handleCheckInstanceConnectionClick}>
+        <Button
+          className="w-full"
+          variant="secondary"
+          onClick={handleCheckInstanceConnectionClick}
+        >
           Testar Conexão
         </Button>
       </DialogFooter>
