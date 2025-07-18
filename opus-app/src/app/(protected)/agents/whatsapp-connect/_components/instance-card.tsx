@@ -18,6 +18,21 @@ import { UpsertInstanceForm } from "./create-wpp-connect-form";
 import { Badge } from "@/components/ui/badge";
 import QrCodeRead from "./qr-code-read";
 import { connectInstance } from "@/actions/instance-connect";
+import {
+  AlertDialogHeader,
+  AlertDialogFooter,
+} from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@radix-ui/react-alert-dialog";
+import ConfirmDesconnectInstance from "./confirm-disconnect-instance";
+import ConfirmDisconnectInstance from "./confirm-disconnect-instance";
 
 interface InstanceCardProps {
   instance: typeof instancesTable.$inferSelect;
@@ -26,6 +41,8 @@ interface InstanceCardProps {
 const InstanceCard = ({ instance }: InstanceCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenQrCodeDialog, setIsOpenQrCodeDialog] = useState(false);
+  
+  const [isDisconnectDialogOpen, setIsDisconnectDialogOpen] = useState(false);
 
 
   return (
@@ -43,8 +60,8 @@ const InstanceCard = ({ instance }: InstanceCardProps) => {
           <div className="flex justify-end gap-8">
             {instance.status == "close" ? (
               <Dialog
-                open={isOpenQrCodeDialog}
-                onOpenChange={setIsOpenQrCodeDialog}
+                open={isDisconnectDialogOpen}
+                onOpenChange={setIsDisconnectDialogOpen}
               >
                 <DialogTrigger asChild>
                   <Button
@@ -59,9 +76,22 @@ const InstanceCard = ({ instance }: InstanceCardProps) => {
                 <QrCodeRead instance_name={instance.name_id} id={instance.id} />
               </Dialog>
             ) : (
-              <Button variant="destructive" className="w-[180px]">
-                Desconectar
-              </Button>
+              <Dialog
+                open={isOpenQrCodeDialog}
+                onOpenChange={setIsOpenQrCodeDialog}
+              >
+                <DialogTrigger asChild>
+                  <Button
+                    className="w-full cursor-pointer hover:bg-red-900"
+                    variant="outline"
+                  >
+                    
+                    Desconectar
+                  </Button>
+                </DialogTrigger>
+
+                <ConfirmDisconnectInstance instance_name={instance.name_id} id={instance.id} />
+              </Dialog>
             )}
           </div>
         </div>

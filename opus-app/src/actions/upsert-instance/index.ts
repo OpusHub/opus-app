@@ -28,14 +28,14 @@ export const upsertInstance = actionClient
       rejectCall: false,
       groupsIgnore: true,
       alwaysOnline: false,
-      readMessages: true,
+      readMessages: false,
       readStatus: false,
       syncFullHistory: false,
       webhook: {
         url: "https://api.maia.com",
         byEvents: false,
         base64: true,
-        events: ["SEND_MESSAGE", "MESSAGE_UPSERT"],
+        events: ["SEND_MESSAGE", "MESSAGES_UPSERT"],
       },
     };
 
