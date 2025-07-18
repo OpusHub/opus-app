@@ -9,14 +9,15 @@ import {
 } from "@/components/ui/card";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { faqTable, instancesTable } from "@/db/schema";
+import { instancesTable } from "@/db/schema";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useAction } from "next-safe-action/hooks";
-import { Edit } from "lucide-react";
+import { Edit, Wifi } from "lucide-react";
 import { UpsertInstanceForm } from "./create-wpp-connect-form";
-import { upsertInstance } from "@/actions/upsert-instance";
 import { Badge } from "@/components/ui/badge";
+import QrCodeRead from "./qr-code-read";
+import { connectInstance } from "@/actions/instance-connect";
 
 interface InstanceCardProps {
   instance: typeof instancesTable.$inferSelect;
@@ -24,19 +25,8 @@ interface InstanceCardProps {
 
 const InstanceCard = ({ instance }: InstanceCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isOpenQrCodeDialog, setIsOpenQrCodeDialog] = useState(false);
 
-  const updateAgentStatusAction = useAction(upsertInstance, {
-    onSuccess: (data) => {
-      // Se a ação retornar os dados atualizados, você pode usá-los.
-      // Ou simplesmente confiar que o estado já está correto.
-      toast.success("Atualizado com sucesso!");
-      // Opcional: Se a sua action retorna o novo agente, você pode sincronizar aqui.
-      // setAgentStatus(data.updatedAgent.status);
-    },
-    onError: (error) => {
-      toast.error("Erro ao atualizar. Tente novamente.");
-    },
-  });
 
   return (
     <Card className="flex w-[550px] justify-between">
@@ -52,7 +42,22 @@ const InstanceCard = ({ instance }: InstanceCardProps) => {
           </div>
           <div className="flex justify-end gap-8">
             {instance.status == "close" ? (
-              <Button className="w-[180px]">Conectar</Button>
+              <Dialog
+                open={isOpenQrCodeDialog}
+                onOpenChange={setIsOpenQrCodeDialog}
+              >
+                <DialogTrigger asChild>
+                  <Button
+                    className="w-full cursor-pointer hover:bg-green-900"
+                    variant="outline"
+                  >
+                    <Wifi />
+                    Conectar
+                  </Button>
+                </DialogTrigger>
+
+                <QrCodeRead instance_name={instance.name_id} id={instance.id} />
+              </Dialog>
             ) : (
               <Button variant="destructive" className="w-[180px]">
                 Desconectar
