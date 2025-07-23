@@ -127,11 +127,12 @@ export const companysTable = pgTable("companies", {
 export const customersTable = pgTable("customers", {
     id: uuid('id').primaryKey().defaultRandom(),
     name: text('name').notNull(),
-    email: text('email').notNull(),
+    email: text('email'),
     phone: text('phone').notNull(),
-    avatarImageUrl: text('avatar_image').notNull(),
+    status_ai : text('status_ai').notNull().default('disable'),
+    avatarImageUrl: text('avatar_image'),
     userId: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
-    resume_ai: text('resume_ai').notNull(),
+    resume_ai: text('resume_ai'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updateAt: timestamp('update_at').notNull().defaultNow(),
 

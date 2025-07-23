@@ -60,8 +60,8 @@ const InstanceCard = ({ instance }: InstanceCardProps) => {
           <div className="flex justify-end gap-8">
             {instance.status == "close" ? (
               <Dialog
-                open={isDisconnectDialogOpen}
-                onOpenChange={setIsDisconnectDialogOpen}
+                open={isOpenQrCodeDialog}
+                onOpenChange={setIsOpenQrCodeDialog}
               >
                 <DialogTrigger asChild>
                   <Button
@@ -77,8 +77,8 @@ const InstanceCard = ({ instance }: InstanceCardProps) => {
               </Dialog>
             ) : (
               <Dialog
-                open={isOpenQrCodeDialog}
-                onOpenChange={setIsOpenQrCodeDialog}
+                open={isDisconnectDialogOpen}
+                onOpenChange={setIsDisconnectDialogOpen}
               >
                 <DialogTrigger asChild>
                   <Button

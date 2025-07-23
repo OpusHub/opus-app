@@ -35,7 +35,7 @@ const QrCodeRead = ({
     setIsGenerateState(true);
     connectInstanceAction.execute({ name_id: instance_name });
     setIsGenerateState(false);
-  };
+  };  
 
   const checkConnectinInstanceAction = useAction(checkInstanceConnect, {
     onSuccess: () => {
@@ -69,7 +69,7 @@ const QrCodeRead = ({
           <Button
             type="submit"
             onClick={handleGenerateQRcode}
-            className="w-full cursor-pointer bg-white text-black hover:text-white"
+            className="w-1/2 cursor-pointer bg-white text-black hover:text-white"
           >
             {isGenerateState == true ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
