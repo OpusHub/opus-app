@@ -7,6 +7,8 @@ import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { faqTable } from "@/db/schema";
 import { headers } from "next/headers";
+import { Input } from "@/components/ui/input";
+import { InputSearch } from "@/components/input-search";
 
 const FaqAgentPage = async () => {
 
@@ -42,6 +44,7 @@ where: eq(faqTable.userId, session.user.id)      })
         </PageActions>
       </PageHeader>
       <PageContent>
+        <InputSearch placeholder="Buscar FAQ" />
         <div className="grid grid-cols-1 space-y-6">
           {faqs.map(faq => <FaqCard key={faq.id} faq={faq}></FaqCard>)}
         </div>
