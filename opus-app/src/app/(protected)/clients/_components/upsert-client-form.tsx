@@ -206,10 +206,9 @@ const UpsertCustomerForm = ({
                   E-mail
                 </FormLabel>
                 <FormControl>
-                  <Textarea
+                  <Input
                     {...field}
                     placeholder="Ex: lari@gmail.com"
-                    className="max-h-32"
                   />
                 </FormControl>
                 <FormMessage />

@@ -15,10 +15,25 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
 import CustomerCard from "./_components/customer-card";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogTrigger } from "@radix-ui/react-dialog";
+import { Edit, Plus } from "lucide-react";
+import { UpsertCustomerForm } from "./_components/upsert-client-form";
 
 const ClientsPage = async () => {
 
-   const session = await auth.api.getSession({
+    
+  
+  const session = await auth.api.getSession({
     headers: await headers(),
   });
 
@@ -28,26 +43,54 @@ const ClientsPage = async () => {
       })
     : [];
 
-    return ( 
-        <PageContainer>
+  return (
+    <PageContainer>
       <PageHeader>
         <PageHeaderContent>
           <PageTitle>Clientes</PageTitle>
-          <PageDescription>
-            Gerencie seus clientes
-          </PageDescription>
+          <PageDescription>Gerencie seus clientes</PageDescription>
         </PageHeaderContent>
         <PageActions>
-          <AddCustomerButton />
+          <AddCustomerButton label="Adicionar Cliente" icon={<Plus />} description="Adicione um novo cliente" title="Adicionar Cliente" variant="default" />
         </PageActions>
       </PageHeader>
       <PageContent>
-        {customers.map((customer) => (
-          <CustomerCard key={customer.id} customer={customer} />
-        ))}
+        <Table className="w-full ">
+          <TableCaption>Lista dos seus clientes.</TableCaption>
+          <TableHeader className="bg-muted rounded w-full ">
+            <TableRow>
+              <TableHead >Nome</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Telefone</TableHead>
+              <TableHead>Status IA</TableHead>
+              <TableHead ></TableHead>
+              <TableHead >Ações</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {customers.map((customer) => (
+              <TableRow key={customer.id}>
+                <TableCell className="font-medium">{customer.name}</TableCell>
+                <TableCell>{customer.email}</TableCell>
+                <TableCell>{customer.phone}</TableCell>
+                <TableCell>
+                    {customer.status_ai === "disabled"
+                    ? "Desativado"
+                    : customer.status_ai === "paused-human"
+                    ? "Em atendimetno humano"
+                    : "Ativado"}
+                </TableCell>
+                <TableCell> {" "}</TableCell>
+                <TableCell>
+                  <AddCustomerButton  label="Editar" icon={<Edit />} customer={customer} description="Edite as informações do cliente" title="Editar Cliente" variant="outline" />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </PageContent>
     </PageContainer>
-    )
+  );
 };
 
 export default ClientsPage;
