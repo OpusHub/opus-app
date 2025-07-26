@@ -42,9 +42,6 @@ export function DateRangePicker({ label }: { label: string }) {
 
   return (
     <div className="flex flex-col gap-3">
-      <Label htmlFor="date-range" className="px-1">
-        {label}
-      </Label>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
