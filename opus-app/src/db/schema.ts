@@ -1,5 +1,7 @@
+import { channel } from "diagnostics_channel";
 import { relations } from "drizzle-orm";
-import { boolean, integer, interval, pgEnum, pgTable, text, time, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { boolean, integer, interval, numeric, pgEnum, pgTable, text, time, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
+import { sendError } from "next/dist/server/api-utils";
 import { spec } from "node:test/reporters";
 import { id } from "zod/v4/locales";
 
@@ -68,7 +70,8 @@ export const instancesTable = pgTable("instances", {
     status: text('status').notNull().default('open'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     userId: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }), 
-    updateAt: timestamp('update_at').notNull().defaultNow()
+    updateAt: timestamp('update_at').notNull().defaultNow(),
+    companyId: uuid('company_id').references(() => companysTable.id, { onDelete: 'cascade' }),
 });
 
 export const servicesTable = pgTable("services", {
@@ -82,6 +85,7 @@ export const servicesTable = pgTable("services", {
     duration: integer('duration').notNull().default(30), // Duration in minutes
     price: integer('price').notNull().default(0),
     ai_list: boolean('ai_list').notNull().default(true), // List of AI models
+    companyId: uuid('company_id').references(() => companysTable.id, { onDelete: 'cascade' }),
 });
 
 // Tabela de vínculo entre serviços e profissionais (users)
@@ -89,6 +93,7 @@ export const serviceProfessionalsTable = pgTable("service_professionals", {
     id: uuid('id').primaryKey().defaultRandom(),
     serviceId: uuid('service_id').notNull().references(() => servicesTable.id, { onDelete: 'cascade' }),
     userId :  text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
+    companyId: uuid('company_id').references(() => companysTable.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
@@ -107,6 +112,7 @@ export const agentTable = pgTable("agents", {
     schedule_mode: text('schedule_mode').notNull().default('link'),
     question_alvo: text('question_alvo').notNull().default(''),
     qualification_role: text('qualification_role').notNull().default(''),
+    companyId: uuid('company_id').references(() => companysTable.id, { onDelete: 'cascade' }),
 });
 
 export const companysTable = pgTable("companies", {
@@ -135,6 +141,7 @@ export const customersTable = pgTable("customers", {
     resume_ai: text('resume_ai'),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updateAt: timestamp('update_at').notNull().defaultNow(),
+    companyId: uuid('company_id').references(() => companysTable.id, { onDelete: 'cascade' }),
 
 });
 
@@ -149,6 +156,8 @@ export const eventsTable = pgTable("events", {
     customerId: uuid('customer_id').notNull().references(() => customersTable.id, { onDelete: 'cascade' }),
     userId: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    companyId: uuid('company_id').references(() => companysTable.id, { onDelete: 'cascade' }),
 });
 
 export const scheduleRolesTable = pgTable("schedule_roles", {
@@ -158,7 +167,11 @@ export const scheduleRolesTable = pgTable("schedule_roles", {
     days_worked: text('days_worked').notNull(), // Comma-separated values for days worked
     slot_duration: integer('slot_duration').notNull(), // Duration in minutes
     slots_interval: interval('interval').notNull(), // Interval between slots
-    userID: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' })
+    userID: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
+    companyId: uuid('company_id').references(() => companysTable.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
+
 });
 
 export const faqTable = pgTable("faqs", {
@@ -166,6 +179,9 @@ export const faqTable = pgTable("faqs", {
     question: text('question').notNull(),
     answer: text('answer').notNull(),
     userId: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
+    companyId: uuid('company_id').references(() => companysTable.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+    updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
 
 export const sessionsTable = pgTable("agent_sessions", {
@@ -173,13 +189,30 @@ export const sessionsTable = pgTable("agent_sessions", {
     userId: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
     instanceId: uuid('instance_id').notNull().references(() => instancesTable.id, { onDelete: 'cascade' }),
     customerId: uuid('customer_id').notNull().references(() => customersTable.id, { onDelete: 'cascade' }),
+    companyId: uuid('company_id').references(() => companysTable.id, { onDelete: 'cascade' }),
     agentId: uuid('agent_id').notNull().references(() => agentTable.id, { onDelete: 'cascade' }),
+    cost : numeric('cost', { precision: 10, scale: 2 }),
+    channel: text('channel').notNull().default('wpp'),
+    analyse_sentimental: text('analyse_sentimental'),
+    score: integer('score').notNull().default(0),
+    reason_interaction: text('reason_interaction'),
+    feedback: text('feedback'),
     status: text('status').notNull().default('active'),
     startTime: timestamp('start_time').notNull().defaultNow(),
     endTime: timestamp('end_time').notNull().defaultNow(),
     etapa: text('etapa').notNull()
 });
 
+export const agentMessagesTable = pgTable("agent_messages", {
+    id: uuid('id').primaryKey().defaultRandom(),
+    sessionId: uuid('session_id').notNull().references(() => sessionsTable.id, { onDelete: 'cascade' }),
+    agentId: uuid('agent_id').notNull().references(() => agentTable.id, { onDelete: 'cascade' }),
+    userId: text('user_id').notNull().references(() => usersTable.id, { onDelete: 'cascade' }),
+    content: text('content'),
+    sender: text('sender').notNull(),
+    companyId: uuid('company_id').references(() => companysTable.id, { onDelete: 'cascade' }),
+    createdAt: timestamp('created_at').notNull().defaultNow(),
+});
 
 
 // RELATIONS 
@@ -194,11 +227,22 @@ export const userTableRelations =  relations(usersTable, ({ many , one}) => ({
     companies: many(companysTable),
 }));
 
-export const companyTableRelations = relations(companysTable, ({ one }) => ({
+export const companyTableRelations = relations(companysTable, ({ one,many }) => ({
     user: one(usersTable, { 
         fields: [companysTable.userId],
         references: [usersTable.id],
     }),
+    agents: many(agentTable),
+    customers: many(customersTable),
+    services: many(servicesTable),
+    instances: many(instancesTable),
+    sessions: many(sessionsTable),
+    events: many(eventsTable),
+    faq: many(faqTable),
+    scheduleRoles: many(scheduleRolesTable),
+    agentMessages: many(agentMessagesTable),
+    serviceProfessionals: many(serviceProfessionalsTable),
+
 }));
 
 export const servicesTableRelations = relations(servicesTable, ({ one, many }) => ({
@@ -207,6 +251,10 @@ export const servicesTableRelations = relations(servicesTable, ({ one, many }) =
         references: [usersTable.id],
     }),
     professionals: many(serviceProfessionalsTable),
+    company: one(companysTable, {
+        fields: [servicesTable.companyId],
+        references: [companysTable.id],
+    }),
 }));
 
 export const serviceProfessionalsTableRelations = relations(serviceProfessionalsTable, ({ one }) => ({
@@ -218,6 +266,10 @@ export const serviceProfessionalsTableRelations = relations(serviceProfessionals
         fields: [serviceProfessionalsTable.userId],
         references: [usersTable.id],
     }),
+    company: one(companysTable, {
+        fields: [serviceProfessionalsTable.companyId],
+        references: [companysTable.id],
+    }),
 }));
 
 export const agentTableRelations = relations(agentTable, ({ one, many }) => ({
@@ -226,6 +278,35 @@ export const agentTableRelations = relations(agentTable, ({ one, many }) => ({
         references: [usersTable.id],
     }),
     sessions: many(sessionsTable),
+    instance: one(instancesTable, {
+        fields: [agentTable.instanceId],
+        references: [instancesTable.id],
+    }),
+    messages: many(agentMessagesTable),
+    company: one(companysTable, {
+        fields: [agentTable.companyId],
+        references: [companysTable.id],
+    }),
+}));
+
+export const agentMessagesTableRelations = relations(agentMessagesTable, ({ one }) => ({
+    session: one(sessionsTable, {
+        fields: [agentMessagesTable.sessionId],
+        references: [sessionsTable.id],
+    }),
+    user: one(usersTable, {
+        fields: [agentMessagesTable.userId],
+        references: [usersTable.id],
+    }),
+    company: one(companysTable, {
+        fields: [agentMessagesTable.companyId],
+        references: [companysTable.id],
+    }),
+    agent: one(agentTable, {
+        fields: [agentMessagesTable.agentId],
+        references: [agentTable.id],
+    }),
+
 }));
 
 export const customerTableRelations = relations(customersTable, ({ one , many}) => ({
@@ -234,12 +315,20 @@ export const customerTableRelations = relations(customersTable, ({ one , many}) 
         references: [usersTable.id]
     }),
     sessions: many(sessionsTable),
+    company: one(companysTable, {
+        fields: [customersTable.companyId],
+        references: [companysTable.id],
+    })
 }));
 export const instanceTableRelations = relations(instancesTable, ({ one }) => ({
     user: one(usersTable ,  { 
         fields: [instancesTable.userId],
         references: [usersTable.id],
-    })
+    }),
+    company: one(companysTable, {
+        fields: [instancesTable.companyId],
+        references: [companysTable.id],
+    }),
 }));
 
 
@@ -265,6 +354,10 @@ export const sessionsTableRelations = relations(sessionsTable, ({ one }) => ({
         fields: [sessionsTable.customerId],
         references: [customersTable.id],
     }),
+    company: one(companysTable, {
+        fields: [sessionsTable.companyId],
+        references: [companysTable.id],
+    }),
 }));
 
 export const eventsTableRelations = relations(eventsTable, ({ one }) => ({
@@ -284,17 +377,29 @@ export const eventsTableRelations = relations(eventsTable, ({ one }) => ({
         fields: [eventsTable.customerId],
         references: [customersTable.id],
     }),
+    company: one(companysTable, {
+        fields: [eventsTable.companyId],
+        references: [companysTable.id],
+    }),
 }));
 
 export const scheduleRolesTableRelations = relations(scheduleRolesTable, ({ one }) => ({
     user: one(usersTable, {
         fields: [scheduleRolesTable.userID],
         references: [usersTable.id],
-    })
+    }),
+    company: one(companysTable, {
+        fields: [scheduleRolesTable.companyId],
+        references: [companysTable.id],
+    }),
 }));
 export const faqTableRelations = relations(faqTable, ({ one }) => ({
     user: one(usersTable, {
         fields: [faqTable.userId],
         references: [usersTable.id],
+    }),
+    company: one(companysTable, {
+        fields: [faqTable.companyId],
+        references: [companysTable.id],
     }),
 }));

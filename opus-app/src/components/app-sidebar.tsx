@@ -93,7 +93,10 @@ export function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader className="border-b-1">
-        <Image src="/opus-logo.png" alt="Opus" width={100} height={50} />
+        <div className="flex items-center gap-2">
+          <Image src="/logo.png" alt="Opus" width={50} height={50} />
+        <h1 className="text-2xl font-semibold">Opus</h1>
+        </div>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
