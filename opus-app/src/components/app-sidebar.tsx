@@ -8,6 +8,7 @@ import {
   UsersRound,
   LogOutIcon,
   Settings2,
+  MessageSquare,
 } from "lucide-react";
 
 import {
@@ -56,6 +57,11 @@ const items = [
     title: "Meu Agente",
     url: "/agents",
     icon: BotMessageSquare,
+  },
+  {
+    title: "Chat",
+    url: "/chat-opus",
+    icon: MessageSquare,
   },
   {
     title: "Configurações",
@@ -113,7 +119,7 @@ export function AppSidebar() {
           <SidebarMenuItem >
             <DropdownMenu >
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="size-lg py-6">
+                <SidebarMenuButton className="size-lg py-6 cursor-pointer">
                   <Avatar>
                     <AvatarFallback>{session.data?.user?.name?.charAt(0)}</AvatarFallback>
                   </Avatar>

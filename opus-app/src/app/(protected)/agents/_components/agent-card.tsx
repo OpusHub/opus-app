@@ -65,7 +65,7 @@ const AgentCard = ({ agent }: AgentCardProps) => {
     .join("");
 
   return (
-    <Card className="max-w-[550px]">
+    <Card className="min-w-fit min-h-[320px] flex flex-col justify-between">
       <CardHeader>
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -88,7 +88,7 @@ const AgentCard = ({ agent }: AgentCardProps) => {
               }}
             >
               <SelectTrigger
-                className={`w-[180px] ${
+                className={`w-fit ${
                   agent.status === "enabled"
                     ? "border-green-700 font-bold text-green-800 shadow-lg"
                     : "border-red-700 font-bold text-red-800"

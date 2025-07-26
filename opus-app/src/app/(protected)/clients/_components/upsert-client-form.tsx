@@ -250,8 +250,8 @@ const UpsertCustomerForm = ({
             {customer && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button className="cursor-pointer bg-background border  hover:bg-red-800" >
-                  <TrashIcon></TrashIcon>
+                  <Button variant='destructive' className="cursor-pointer" >
+                    <TrashIcon />
                     Deletar
                   </Button>
                 </AlertDialogTrigger>

@@ -42,7 +42,7 @@ where: eq(agentTable.userId, session.user.id)      })
         </PageActions>
       </PageHeader>
       <PageContent>
-        <div className="grid grid-cols-4 space-y-6">
+        <div className="grid grid-cols-3 gap-6">
           {agents.map(agent => <AgentCard key={agent.id} agent={agent}></AgentCard>)}
         </div>
       </PageContent>

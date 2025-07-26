@@ -190,7 +190,7 @@ const UpsertInstanceForm = ({
             {instance && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button className="cursor-pointer bg-background border  hover:bg-red-800" >
+                  <Button className="cursor-pointer" variant='destructive' >
                   <TrashIcon></TrashIcon>
                     Deletar
                   </Button>

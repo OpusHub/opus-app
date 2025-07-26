@@ -291,8 +291,8 @@ const UpsertAgentForm = ({
             {agent && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button className="cursor-pointer bg-background border  hover:bg-red-800" >
-                  <TrashIcon></TrashIcon>
+                  <Button variant='destructive' className="cursor-pointer">
+                    <TrashIcon />
                     Deletar
                   </Button>
                 </AlertDialogTrigger>
@@ -307,7 +307,7 @@ const UpsertAgentForm = ({
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction className="bg-red-700 hover:bg-red-800" onClick={handleDeleteAgentClick}>Deletar</AlertDialogAction>
+                    <AlertDialogAction className= "cursor-pointer" onClick={handleDeleteAgentClick}>Deletar</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>

@@ -163,7 +163,7 @@ const UpsertFaqForm = ({
             {faq && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button className="cursor-pointer bg-background border  hover:bg-red-800" >
+                  <Button variant='destructive' className="cursor-pointer" >
                   <TrashIcon></TrashIcon>
                     Deletar
                   </Button>
@@ -179,7 +179,7 @@ const UpsertFaqForm = ({
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction className="bg-red-700 hover:bg-red-800" onClick={handleDeleteFaqClick}>Deletar</AlertDialogAction>
+                    <AlertDialogAction className="cursor-pointer" onClick={handleDeleteFaqClick}>Deletar</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>

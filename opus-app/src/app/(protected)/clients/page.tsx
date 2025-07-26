@@ -65,14 +65,14 @@ const ClientsPage = async () => {
 
         <Table className="w-full">
           <TableCaption>Lista dos seus clientes.</TableCaption>
-          <TableHeader className="bg-muted w-full rounded">
+          <TableHeader className="w-full rounded">
             <TableRow>
-              <TableHead>Nome</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Telefone</TableHead>
-              <TableHead>Status IA</TableHead>
-              <TableHead></TableHead>
-              <TableHead>Ações</TableHead>
+              <TableHead className="text-muted-foreground">Nome</TableHead>
+              <TableHead className="text-muted-foreground">Email</TableHead>
+              <TableHead className="text-muted-foreground">Telefone</TableHead>
+              <TableHead className="text-muted-foreground">Status IA</TableHead>
+              <TableHead className="text-muted-foreground"></TableHead>
+              <TableHead className="text-muted-foreground">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -82,11 +82,13 @@ const ClientsPage = async () => {
                 <TableCell>{customer.email}</TableCell>
                 <TableCell>{customer.phone}</TableCell>
                 <TableCell>
-                  {customer.status_ai === "disabled"
-                    ? "Desativado"
-                    : customer.status_ai === "paused-human"
-                      ? "Em atendimetno humano"
+                  <Badge variant={customer.status_ai === "disable" ? "destructive" : customer.status_ai === "paused-human" ? "secondary" : "default"}>
+                    {customer.status_ai === "disable"
+                      ? "Desativado"
+                      : customer.status_ai === "paused-human"
+                      ? "Em atendimento humano"
                       : "Ativado"}
+                  </Badge>
                 </TableCell>
                 <TableCell> </TableCell>
                 <TableCell>
