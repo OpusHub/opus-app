@@ -1,11 +1,11 @@
-const ChatOpusPage = () => {
-  return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">Chat Opus</h1>
-      <p className="text-gray-600">Converse com o Opus e veja como ele pode ajudar você.</p>
-      {/* Add your chat component here */}
-    </div>
-  );
-}
+import ChatScreen from "@/app/(protected)/chat-opus/_components/chat-screen";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
-export default ChatOpusPage;
+export default async function Page() {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  return <ChatScreen name={session?.user?.name || "User"} />;
+}

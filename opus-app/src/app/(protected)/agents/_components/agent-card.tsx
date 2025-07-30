@@ -141,6 +141,10 @@ const AgentCard = ({ agent }: AgentCardProps) => {
             Conexão com Whatsapp
           </Button>
         </Link>
+        <Button variant="outline" className="shadow-accent-foreground w-full cursor-pointer hover:bg-gray-700" onClick={() => {}}>
+          
+          Instruções de atendimento
+        </Button>
       </CardFooter>
     </Card>
   );
