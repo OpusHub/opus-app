@@ -95,7 +95,9 @@ export function AppSidebar() {
       <SidebarHeader className="border-b-1">
         <div className="flex items-center gap-2">
           <Image src="/logo.png" alt="Opus" width={50} height={50} />
-        <h1 className="text-2xl font-semibold">Opus</h1>
+          <div className="flex gap-2 items-end">
+             <h1 className="text-2xl font-semibold text-white">Opus</h1><p className="text-muted-foreground text-sm mr-8">ecomm</p>
+          </div>
         </div>
       </SidebarHeader>
       <SidebarContent>

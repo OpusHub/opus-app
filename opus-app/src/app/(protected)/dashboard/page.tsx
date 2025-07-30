@@ -15,8 +15,23 @@ import { eq, gte, lte, and, sum } from "drizzle-orm";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { BadgeMinus, Clock4, Coins, MessageCircleMore, PackageMinus, PackageX, ShoppingBagIcon, User } from "lucide-react";
+import {
+  BadgeMinus,
+  Clock4,
+  Coins,
+  MessageCircleMore,
+  PackageMinus,
+  PackageX,
+  ShoppingBagIcon,
+  User,
+} from "lucide-react";
 import CardDashboard from "@/components/card-dashboard";
+import { ChartAreaInteractive } from "@/components/chart-line-area";
+import { ChartBarStacked } from "@/components/chart-bar-area";
+import { ChartBarMultiple } from "@/components/chart-comparision-channel";
+import { ChartRadarDots } from "@/components/radar-chart-sentimental";
+import { ChartAgentPerformance } from "@/components/chart-ticket-escalated";
+import { ChartPieInteractive } from "@/components/chart-type-solicitation-to-day";
 
 interface DashboardPageProps {
   searchParams: Promise<{
@@ -71,31 +86,59 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
           <CardDashboard
             title="Total de Pedidos"
             Icon={ShoppingBagIcon}
-            value={235.000}
+            value={235.0}
           />
           <CardDashboard
             title="Pedidos Reembolsados"
             Icon={PackageMinus}
             value={30}
           />
-          <CardDashboard title="Pedidos Cancelados" Icon={PackageX} value={32.000} />
-          <CardDashboard title="Taxa ChargeBack" Icon={BadgeMinus} value={"5%"} />
-          
+          <CardDashboard
+            title="Pedidos Cancelados"
+            Icon={PackageX}
+            value={32.0}
+          />
+          <CardDashboard
+            title="Taxa ChargeBack"
+            Icon={BadgeMinus}
+            value={"5%"}
+          />
         </div>
         <div className="grid grid-cols-4 gap-2">
           <CardDashboard
             title="Mensagens Enviadas"
             Icon={MessageCircleMore}
-            value={235.000}
+            value={235.0}
           />
           <CardDashboard
             title="Custo de conversa"
             Icon={Coins}
-            value={'R$ 0.028'}
+            value={"R$ 0.028"}
           />
-          <CardDashboard title="Total de Clientes Atendidos" Icon={User} value={"32"} />
-          <CardDashboard title="Tempo médio de resposta" Icon={Clock4} value={"47seg"} />
-          
+          <CardDashboard
+            title="Total de Clientes Atendidos"
+            Icon={User}
+            value={"32"}
+          />
+          <CardDashboard
+            title="Tempo médio de resposta"
+            Icon={Clock4}
+            value={"47seg"}
+          />
+        </div>
+        <div className="flex h-fit flex-col gap-8">
+          <div className="flex w-full justify-between gap-4">
+          <ChartAreaInteractive />
+          <ChartPieInteractive />
+          </div>
+          <ChartBarStacked />
+
+          <ChartBarMultiple />
+
+          <div className="flex w-full justify-between gap-4">
+            <ChartRadarDots />
+            <ChartAgentPerformance />
+          </div>
         </div>
       </PageContent>
     </PageContainer>
