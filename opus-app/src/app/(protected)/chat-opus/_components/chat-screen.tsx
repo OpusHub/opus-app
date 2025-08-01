@@ -127,7 +127,7 @@ export default function ChatScreen({ name }: {name: string }) {
             </div>
 
             {/* Input fixo na parte inferior */}
-            <div className="border-t p-4">
+            <div className=" p-4 mb-16 border-t">
               <div className="max-w-3xl mx-auto">
                 <div className="relative">
                   <Input

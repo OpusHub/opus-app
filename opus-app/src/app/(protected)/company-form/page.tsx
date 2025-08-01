@@ -19,6 +19,7 @@ const CompanyFormPage = async () => {
     return redirect("/auth");
   }
 
+
   return (
     <Dialog open>
       <form >

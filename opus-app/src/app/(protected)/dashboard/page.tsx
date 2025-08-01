@@ -49,8 +49,8 @@ const DashboardPage = async ({ searchParams }: DashboardPageProps) => {
     redirect("/auth");
   }
 
-  if (!session?.user?.company) {
-    redirect("/company-form");
+  if(!session?.user?.company?.id) {
+    return redirect("/company-form");
   }
 
   // const { from, to } = await searchParams;

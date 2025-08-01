@@ -19,17 +19,16 @@ export const auth = betterAuth({
         // Remove or replace 'with' according to your schema relations
         // with: { /* correct relation key here if needed */ },
       });
-      const company = companies[0];
+      const company = companies?.[0];
+      
       return {
         user: {
           ...user,
-          company: company
-            ? {
-                id: company.id,
-                name: company.name,
-                logo: company.logoImageUrl,
-              }
-            : null,
+          company: company?.id ? {
+                id: company?.id,
+                name: company?.name,
+                logo: company?.logoImageUrl,
+              } : undefined,
         },
         session,
       };
