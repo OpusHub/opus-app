@@ -22,6 +22,8 @@ export const upsertScenario = actionClient
       throw new Error("Empresa não existe");
     }
 
+    console.log('scenario', parsedInput.instructions)
+
     await db
       .insert(supportScenariosTable)
       .values({
