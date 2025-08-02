@@ -24,7 +24,7 @@ import {
 import { updateAgentStatus } from "@/actions/update-status-agent";
 import { toast } from "sonner";
 import { useAction } from "next-safe-action/hooks";
-import { Brain, Edit, Loader2 } from "lucide-react";
+import { Brain, Edit, Loader2, NotebookText } from "lucide-react";
 import Link from "next/link";
 import { WhatsappLogo } from "@phosphor-icons/react";
 
@@ -141,10 +141,15 @@ const AgentCard = ({ agent }: AgentCardProps) => {
             Conexão com Whatsapp
           </Button>
         </Link>
-        <Button variant="outline" className="shadow-accent-foreground w-full cursor-pointer hover:bg-gray-700" onClick={() => {}}>
-          
-          Instruções de atendimento
-        </Button>
+        <Link href="/agents/service-scenario" className="w-full">
+          <Button
+            variant="outline"
+            className="shadow-accent-foreground w-full cursor-pointer hover:bg-gray-700"
+          >
+            <NotebookText size={24} />
+            Cenários de Atendimento
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

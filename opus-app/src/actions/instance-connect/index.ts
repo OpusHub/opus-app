@@ -24,11 +24,11 @@ export const connectInstance = actionClient
 
     try {
       const response = await fetch(
-        `https://evo-evolution-api.mxqlmx.easypanel.host/instance/connect/${parsedInput.name_id}`,
+        `https://api.opusbr.com/instance/connect/${parsedInput.name_id}`,
         {
           method: "GET",
           headers: {
-            apikey: "429683C4C977415CAAFCCE10F7D57E11",
+            apikey: "2048e6b0075f33cc60b308014f963cc8",
             "Content-Type": "application/json",
           },
         },

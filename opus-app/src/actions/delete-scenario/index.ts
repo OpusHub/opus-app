@@ -1,6 +1,6 @@
 'use server'
 import db from "@/db";
-import { faqTable, instancesTable } from "@/db/schema";
+import { supportScenariosTable } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { actionClient } from "@/lib/next-safe-action";
@@ -9,7 +9,7 @@ import z from "zod";
 import { eq } from "drizzle-orm";
 
 
-export const deleteInstance = actionClient.schema(z.object({
+export const deleteScenario = actionClient.schema(z.object({
     id: z.string().uuid(),
 })).action(async ({parsedInput}) => {
 
@@ -27,7 +27,7 @@ export const deleteInstance = actionClient.schema(z.object({
         throw new Error('Empresa não existe')
     }
 
-    await db.delete(instancesTable).where(eq(instancesTable.id, parsedInput.id))
+    await db.delete(supportScenariosTable).where(eq(supportScenariosTable.id, parsedInput.id))
 
-    revalidatePath('/agents/whatsapp-connect')
+    revalidatePath('/agents/service-scenario')
 })

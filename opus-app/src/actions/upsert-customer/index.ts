@@ -20,7 +20,7 @@ export const upsertCustomer = actionClient.schema(upsertCustomerSchema).action(a
         
     }
 
-    if (!session?.user.company.id) {
+    if (!session?.user?.company?.id) {
         throw new Error('Empresa não existe')
     }
 

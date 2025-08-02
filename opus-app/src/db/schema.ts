@@ -214,7 +214,26 @@ export const agentMessagesTable = pgTable("agent_messages", {
     createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
+export const supportScenariosTable = pgTable("support_scenarios", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  title: text("title"), // ex: "Cliente quer cancelar"
+  instructions: text("instructions"), // o que a IA deve fazer
+  instructions_processed: text("instructions_processed"), // instruções processadas
+  userId: text("user_id").notNull().references(() => usersTable.id, { onDelete: "cascade" }),
+  companyId: uuid("company_id").references(() => companysTable.id, { onDelete: "cascade" }),
+  orderIndex: integer("order_index").default(0), // opcional para ordenação
+  enabled: boolean("enabled").default(true), // opcional para ativar/desativar
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
 
+
+export const supportScenarioImagesTable = pgTable("support_scenario_images", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  scenarioId: uuid("scenario_id").notNull().references(() => supportScenariosTable.id, { onDelete: "cascade" }),
+  imageUrl: text("image_url").notNull(), // URL do Supabase Storage ou outro bucket
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
 // RELATIONS 
 export const userTableRelations =  relations(usersTable, ({ many , one}) => ({
     agents: many(agentTable),
@@ -402,4 +421,23 @@ export const faqTableRelations = relations(faqTable, ({ one }) => ({
         fields: [faqTable.companyId],
         references: [companysTable.id],
     }),
+}));
+
+export const supportScenariosTableRelations = relations(supportScenariosTable, ({ one, many }) => ({
+  user: one(usersTable, {
+    fields: [supportScenariosTable.userId],
+    references: [usersTable.id],
+  }),
+  company: one(companysTable, {
+    fields: [supportScenariosTable.companyId],
+    references: [companysTable.id],
+  }),
+  images: many(supportScenarioImagesTable), // um cenário pode ter várias imagens
+}));
+
+export const supportScenarioImagesTableRelations = relations(supportScenarioImagesTable, ({ one }) => ({
+  scenario: one(supportScenariosTable, {
+    fields: [supportScenarioImagesTable.scenarioId],
+    references: [supportScenariosTable.id],
+  }),
 }));

@@ -178,7 +178,7 @@ export function ChartPieInteractive() {
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Visitors
+                          Solicitações
                         </tspan>
                       </text>
                     )
