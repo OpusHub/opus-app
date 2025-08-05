@@ -54,7 +54,7 @@ const items = [
     icon: Calendar,
   },
   {
-    title: "Meu Agente",
+    title: "Agentes",
     url: "/agents",
     icon: BotMessageSquare,
   },

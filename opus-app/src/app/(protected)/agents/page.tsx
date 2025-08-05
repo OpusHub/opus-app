@@ -32,9 +32,9 @@ where: eq(agentTable.userId, session.user.id)      })
     <PageContainer>
       <PageHeader>
         <PageHeaderContent>
-          <PageTitle>Meu Agente</PageTitle>
+          <PageTitle>Meu Agentes</PageTitle>
           <PageDescription>
-            Gerencie seu agente de atendimento
+            Gerencie seu agentes
           </PageDescription>
         </PageHeaderContent>
         <PageActions>

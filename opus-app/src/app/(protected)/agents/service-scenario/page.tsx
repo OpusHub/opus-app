@@ -25,6 +25,14 @@ import { AddScenarioButton } from "./_components/add-scenario-btn";
 import { supportScenariosTable } from "@/db/schema";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import {
+  Breadcrumb,
+  BreadcrumbList,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbSeparator,
+  BreadcrumbPage,
+} from "@/components/ui/breadcrumb";
 
 const ScenariosPage = async () => {
   const session = await auth.api.getSession({
@@ -39,6 +47,17 @@ const ScenariosPage = async () => {
 
   return (
     <PageContainer>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/agents">Agentes</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Cenários de Atendimento</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
       <PageHeader>
         <PageHeaderContent>
           <PageTitle>Cenários de Atendimento</PageTitle>
